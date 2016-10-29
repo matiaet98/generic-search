@@ -2,7 +2,9 @@
 import React from 'react';
 import {Component} from 'react';
 import {connect} from 'react-redux';
-import {Link} from 'react-router';
+import { Link } from 'react-router';
+import { Grid } from 'semantic-ui-react';
+import SelectBox from '../components/SelectBox';
 
 class Search extends Component {
 	constructor(props) {
@@ -10,9 +12,15 @@ class Search extends Component {
 	}
 	
 	render() : Object {
-    	return (
+        return (
             <div>
-				<Link to="/results">Testing</Link>    
+				<br/>
+            	<Grid centered columns={2}>
+    				<Grid.Column>
+      					<SelectBox/>
+						<Link to="/results">Testing</Link>
+            	    </Grid.Column>
+                </Grid>
 			</div>
 		);
 	}

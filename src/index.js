@@ -1,7 +1,7 @@
 // @flow
 import React from 'react';
 import { render } from 'react-dom';
-import { createStore, applyMiddleware, combineReducers } from 'redux';
+import { createStore, applyMiddleware, combineReducers, compose } from 'redux';
 import { Provider } from 'react-redux';
 import thunk from 'redux-thunk';
 import { Router, Route, browserHistory } from 'react-router';
@@ -12,7 +12,8 @@ import Results from './containers/Results';
 
 const middleware = [thunk];
 
-const store = createStore(combineReducers({ /*submitHost: submitHost,*/ routing: routerReducer }),applyMiddleware(...middleware));
+const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
+const store = createStore(combineReducers({ /*submitHost: submitHost,*/ routing: routerReducer }), composeEnhancers(applyMiddleware(...middleware)));
 
 const history = syncHistoryWithStore(browserHistory, store);
 
