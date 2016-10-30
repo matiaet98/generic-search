@@ -5,15 +5,16 @@ import { createStore, applyMiddleware, combineReducers, compose } from 'redux';
 import { Provider } from 'react-redux';
 import thunk from 'redux-thunk';
 import { Router, Route, browserHistory } from 'react-router';
-import { syncHistoryWithStore, routerReducer } from 'react-router-redux';
+import { syncHistoryWithStore, routerReducer, routerMiddleware } from 'react-router-redux';
 import Search from './containers/Search';
 import Results from './containers/Results';
-//import submitHost from './reducers';
+import allReducers from './reducers';
 
-const middleware = [thunk];
+const middleware1 = [thunk];
+const middleware2 = routerMiddleware(browserHistory);
 
 const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
-const store = createStore(combineReducers({ /*submitHost: submitHost,*/ routing: routerReducer }), composeEnhancers(applyMiddleware(...middleware)));
+const store = createStore(combineReducers({ allReducers: allReducers, routing: routerReducer }), composeEnhancers(applyMiddleware(...middleware1,...middleware2)));
 
 const history = syncHistoryWithStore(browserHistory, store);
 

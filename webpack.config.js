@@ -1,5 +1,5 @@
 const webpack = require('webpack');
-var PROD = JSON.parse(process.env.PROD_ENV || '0');
+const PROD = JSON.parse(process.env.PROD_ENV || '0');
 
 module.exports = {
      entry: './src/index.js',
@@ -16,7 +16,7 @@ module.exports = {
          }],
          query: {
              presets: ['latest', 'react'],
-             plugins: ['transform-async-to-generator']
+             plugins: ['transform-async-to-generator','transform-object-rest-spread']
          }
      },
      devServer: { inline: true },

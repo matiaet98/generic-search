@@ -3,33 +3,15 @@ import React from 'react';
 import {Component} from 'react';
 import {connect} from 'react-redux';
 import { Message, Icon, Form, Button, Grid, Popup, Header, Dropdown } from 'semantic-ui-react';
+import {addOneSelect,setSelected} from '../actions';
 
 class SelectBox extends Component {
-    clickAddAll: Object;
-    clickAddOne: Object;
-    state : Object;
-    values : Array<Object>;
 	
     constructor(props) {
         super(props);
-        this.clickAddOne = this.clickAddOne.bind(this);
-        this.clickAddAll = this.clickAddAll.bind(this);
-        this.state = {fields : []};
-        this.values = [{text : 'text1',value : 'value1'},{text : 'text2',value : 'value2'}];
     }
     
-    clickAddOne(e: Object) {
-        this.state.fields.push(
-            <Dropdown placeholder='Elegir nombre del campo' selection options={this.values}/>
-        ); 
-        this.forceUpdate(); //Como el push devuelve el length y no el array nuevo, no puedo usar setState
-    }
-    clickAddAll(e: Object) {
-        alert('All!');
-    }
-	
 	render() : Object {
-        console.log('render');
     	return (
             <div>
                 <Message
@@ -42,11 +24,18 @@ class SelectBox extends Component {
                 <Form children className="attached segment fluid">
                     <Grid>
                         {
-                            this.state.fields.map((el)=>{
-                                return(
-                                    <Grid.Row verticalAlign="top">
-                                        <Grid.Column textAlign="left">
-                                            {el}
+                            this.props.lists &&
+                            this.props.lists.map( (list,ind) => {
+                                return( 
+                                    <Grid.Row key={ind} verticalAlign="top">
+                                        <Grid.Column key={ind} textAlign="left">
+                                            <Dropdown 
+                                                defaultValue={list.selectedValue || list.values[0].value} 
+                                                key={list.values.length} 
+                                                selection 
+                                                options={list.values}
+                                                onChange={ (name,value) => { this.props.setSelected(ind,value); } }
+                                            />
                                         </Grid.Column>
                                     </Grid.Row>
                                 );
@@ -63,9 +52,11 @@ class SelectBox extends Component {
                                         <Grid.Column>
                                             <Header textAlign='center' as='h4'>Campos a agregar</Header>
                                             <Button.Group>
-                                                <Button primary onClick={this.clickAddOne}>Uno</Button>
+                                                <Button primary onClick={()=>{this.props.addOneSelect()}}>
+                                                    Uno
+                                                </Button>
                                                 <Button.Or/>
-                                                <Button onClick={this.clickAddAll} >Todos</Button>
+                                                <Button onClick={()=>{this.props.addOneSelect()}}>Todos</Button>
                                             </Button.Group>
                                         </Grid.Column>
                                     </Grid> 
@@ -80,7 +71,12 @@ class SelectBox extends Component {
 }
 
 const mapStateToProps : Object = (state : Object) => {
-    return state;
+    if(state.allReducers.setSelected.selectedValue){
+        let sel = state.allReducers.setSelected;
+        state.allReducers.addOneSelect.lists[sel.index].selectedValue = sel.selectedValue.value;
+    }
+    let lists = state.allReducers.addOneSelect.lists;
+    return({lists});
 }
 
-export default connect(mapStateToProps)(SelectBox);
+export default connect(mapStateToProps,{addOneSelect,setSelected})(SelectBox);
