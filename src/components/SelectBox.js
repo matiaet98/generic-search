@@ -71,11 +71,7 @@ class SelectBox extends Component {
 }
 
 const mapStateToProps : Object = (state : Object) => {
-    if(state.allReducers.setSelected.selectedValue){
-        let sel = state.allReducers.setSelected;
-        state.allReducers.addOneSelect.lists[sel.index].selectedValue = sel.selectedValue.value;
-    }
-    let lists = state.allReducers.addOneSelect.lists;
+    let lists = state.allReducers.lists;
     return({lists});
 }
 
