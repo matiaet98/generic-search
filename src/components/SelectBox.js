@@ -3,7 +3,7 @@ import React from 'react';
 import {Component} from 'react';
 import {connect} from 'react-redux';
 import { Message, Icon, Form, Button, Grid, Popup, Header, Dropdown } from 'semantic-ui-react';
-import {addOneSelect,setSelected} from '../actions';
+import {addOneSelect,addAllSelect,setSelected,removeSelect} from '../actions';
 
 class SelectBox extends Component {
 	
@@ -11,7 +11,7 @@ class SelectBox extends Component {
         super(props);
     }
     
-	render() : Object {
+    render(): Object {
     	return (
             <div>
                 <Message
@@ -22,20 +22,22 @@ class SelectBox extends Component {
                 >
                 </Message>
                 <Form children className="attached segment fluid">
-                    <Grid>
+                    <Grid divided='vertically'>
                         {
                             this.props.lists &&
-                            this.props.lists.map( (list,ind) => {
+                            this.props.lists.map((list, ind) => {
                                 return( 
-                                    <Grid.Row key={ind} verticalAlign="top">
-                                        <Grid.Column key={ind} textAlign="left">
+                                    <Grid.Row key={'gr'+ind} verticalAlign="top">
+                                        <Grid.Column key={'gc'+ind} textAlign="left">
                                             <Dropdown 
-                                                defaultValue={list.selectedValue || list.values[0].value} 
-                                                key={list.values.length} 
+                                                value={list.selectedValue || list.values[0].value} 
+                                                key={'dd'+ind} 
                                                 selection 
                                                 options={list.values}
                                                 onChange={ (name,value) => { this.props.setSelected(ind,value); } }
-                                            />
+                                                />
+                                            {String.fromCharCode(160).repeat(10)}
+                                            <Button key={'btn' + ind} basic color='red' icon='remove' onClick={(e) => { e.preventDefault(); this.props.removeSelect(ind) } } />
                                         </Grid.Column>
                                     </Grid.Row>
                                 );
@@ -56,7 +58,9 @@ class SelectBox extends Component {
                                                     Uno
                                                 </Button>
                                                 <Button.Or/>
-                                                <Button onClick={()=>{this.props.addOneSelect()}}>Todos</Button>
+                                                <Button onClick={() => { this.props.addAllSelect() } }>
+                                                    Todos
+                                                </Button>
                                             </Button.Group>
                                         </Grid.Column>
                                     </Grid> 
@@ -74,4 +78,4 @@ const mapStateToProps : Object = (state : Object) => {
     return ({ lists: state.allReducers.lists });
 }
 
-export default connect(mapStateToProps,{addOneSelect,setSelected})(SelectBox);
+export default connect(mapStateToProps,{addOneSelect,addAllSelect,setSelected,removeSelect})(SelectBox);
