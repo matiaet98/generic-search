@@ -71,8 +71,7 @@ class SelectBox extends Component {
 }
 
 const mapStateToProps : Object = (state : Object) => {
-    let lists = state.allReducers.lists;
-    return({lists});
+    return ({ lists: state.allReducers.lists });
 }
 
 export default connect(mapStateToProps,{addOneSelect,setSelected})(SelectBox);
