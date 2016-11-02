@@ -21,7 +21,6 @@ let removeAction = { type: REMOVE_SELECT, index: 0 };
 
 describe('ADD_ONE_SELECT reducer', () => {
     let list = reducer(emptyList, addOneAction);
-    console.log(list);
     it('Deberia crear el objeto lists', () => {
         expect(list)
             .to.exist
