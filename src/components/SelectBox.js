@@ -15,6 +15,7 @@ class SelectBox extends Component {
     	return (
             <div>
                 <Message
+                    floating
                     attached
                     icon='browser'
                     header='Visualización'
@@ -46,7 +47,7 @@ class SelectBox extends Component {
                         <Grid.Row verticalAlign='bottom'>
                             <Grid.Column textAlign='right'>
                                 <Popup
-                                    trigger={<Button circular color='blue' icon='plus' onClick={(e) => e.preventDefault()}/>}
+                                    trigger={<Button circular color='blue' icon='plus' onClick={(e) => { e.preventDefault(); this.props.addOneSelect() } }/>}
                                     flowing
                                     hoverable
                                     positioning='right center'>

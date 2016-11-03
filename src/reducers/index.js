@@ -14,16 +14,15 @@ const lists = (state: Array<Object> = [], action: Object) => {
                 return {values : action.values,selectedValue : val.value}
             });
         case SET_SELECTED:
-            return [
-                ...state.slice(0,action.index),
-                { values : [...state[action.index].values], selectedValue : action.selectedValue.value  },
-                ...state.slice(action.index + 1)
-            ]
+            return state
+                .map( (el,ind) => {
+                    return ind != action.index ? el : {values : el.values, selectedValue : action.selectedValue.value};
+                });
         case REMOVE_SELECT:
-            return [
-                ...state.slice(0,action.index),
-                ...state.slice(action.index + 1)
-            ]
+            return state.filter(
+                (el,ind) =>{ 
+                    return ind != action.index
+                });
         default:
             return state;
     }
