@@ -1,5 +1,6 @@
 //@flow
-export function getSelectFields(viewName : string): Array < Object > {
+
+export function getSelectFields(viewName: string): Array<Object> {
     return [
         { 'text': 'text1', 'value': 'value1', 'columnType':'TEXT' }, 
         { 'text': 'text2', 'value': 'value2', 'columnType':'TEXT' },
@@ -22,6 +23,16 @@ export function getFilterFields(viewName : string): Array < Object > {
         { 'text': 'text1', 'value': 'value1', 'columnFilterType' : 'INPUT' }, 
         { 'text': 'text2', 'value': 'value2', 'columnFilterType' : 'INPUT' },
         { 'text': 'text3', 'value': 'value3', 'columnFilterType' : 'DATE' },
-        { 'text': 'text5', 'value': 'value5', 'columnFilterType' : 'DROPDOWN' }
+        { 'text': 'text4', 'value': 'value4', 'columnFilterType' : 'DROPDOWN' },
+        { 'text': 'text5', 'value': 'value5', 'columnFilterType' : 'MULTIPLEDROPDOWN' }
+    ];
+}
+
+export function getDropdownValues(viewName : string,columnName : string): Array < Object > {
+    return [
+        { 'text': 'col1', 'value': 'colValue1' }, 
+        { 'text': 'col2', 'value': 'colValue2' },
+        { 'text': 'col3', 'value': 'colValue3' },
+        { 'text': 'col4', 'value': 'colValue4' }
     ];
 }

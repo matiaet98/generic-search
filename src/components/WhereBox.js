@@ -2,8 +2,10 @@
 import React from 'react';
 import {Component} from 'react';
 import {connect} from 'react-redux';
-import { Message, Icon, Form, Button, Grid, Popup, Header, Dropdown } from 'semantic-ui-react';
-import {addFilter,setFiltered,removeFilter} from '../actions';
+import { Input, Message, Icon, Form, Button, Grid, Popup, Header, Dropdown } from 'semantic-ui-react';
+import DatePicker from 'react-datepicker';
+import {addFilter,setFiltered,removeFilter,setOpFiltered,addFilterField} from '../actions';
+import moment from 'moment';
 
 class WhereBox extends Component {
 	
@@ -12,7 +14,7 @@ class WhereBox extends Component {
     }
     
     render(): Object {
-    	return (
+        return (
             <div>
                 <Message
                     floating
@@ -37,23 +39,67 @@ class WhereBox extends Component {
                                 { text: 'entre', value: 'IN' },
                                 { text: 'fuera de', value: 'NOT IN' }
                                 ];
+                                let filterNode = null;
+                                switch(list.filterType){
+                                    case 'INPUT':
+                                        filterNode = <Input placeholder='Ingrese valor/es (separados por ; )'/>;
+                                        break;
+                                    case 'DATE':
+                                        filterNode = <DatePicker 
+                                            selected={moment()}
+                                            dateFormat="DD/MM/YYYY" 
+                                            locale="es"
+                                            placeholderText="seleccione la fecha"
+                                        />;
+                                        break;
+                                    case 'DROPDOWN':
+                                        filterNode = <Dropdown
+                                            value = {list.selectedFilterList}
+                                            key = {'dd'+ind}
+                                            selection
+                                            options={list.filterList}
+                                        />;
+                                    case 'MULTIPLEDROPDOWN':
+                                        filterNode = <Dropdown
+                                            value = {list.selectedFilterList}
+                                            key = {'dd'+ind}
+                                            selection
+                                            multiple
+                                            options={list.filterList}
+                                        />;
+                                    
+                                    default: null;
+                                }
                                 return( 
-                                    <Grid.Row key={'gr'+ind} verticalAlign="top" columns={3}>
+                                    <Grid.Row key={'gr'+ind} verticalAlign="top" columns={4}>
                                         <Grid.Column key={'gc1'+ind}>
                                             <Dropdown 
                                                 value={list.selectedValue} 
                                                 key={'dd'+ind} 
                                                 selection 
                                                 options={list.values}
-                                                onChange={ (name,value) => { this.props.setFiltered(ind,value); } }
+                                                onChange={(name, value) => {
+                                                    this.props.setFiltered(ind, value);
+                                                    let index = list.values.findIndex((el, ind) => {
+                                                        return el.value == value.value;
+                                                    });
+                                                    let filterType = list.columnFilterTypes[index].columnFilterType;
+                                                    this.props.addFilterField(ind, value.value, filterType);
+                                                }
+                                                }
                                                 />
                                         </Grid.Column>
                                         <Grid.Column key={'gc3' + ind}>
-                                            <Dropdown  
+                                            <Dropdown
+                                                value={list.selectedOpValue}    
                                                 key={'dd'+ind} 
                                                 selection 
                                                 options={opList}
+                                                onChange={ (name,value) => { this.props.setOpFiltered(ind,value.value); } }
                                             />    
+                                        </Grid.Column>
+                                        <Grid.Column key={'gc4'+ind}>
+                                            {filterNode}
                                         </Grid.Column>
                                         <Grid.Column key={'gc2'+ind} textAlign='right'>
                                             <Button key={'btn' + ind} circular basic color='red' icon='remove' onClick={(e) => { e.preventDefault(); this.props.removeFilter(ind) } } />
@@ -78,4 +124,4 @@ const mapStateToProps : Object = (state : Object) => {
     return ({ filterLists: state.allReducers.filterLists });
 }
 
-export default connect(mapStateToProps,{addFilter,setFiltered,removeFilter})(WhereBox);
+export default connect(mapStateToProps,{addFilter,setFiltered,removeFilter,setOpFiltered,addFilterField})(WhereBox);

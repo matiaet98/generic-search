@@ -10,8 +10,11 @@ import {
     REMOVE_FILTER,
     ADD_OPERATION,
     SET_OPERATED,
-    REMOVE_OPERATION
+    REMOVE_OPERATION,
+    SET_OP_FILTERED,
+    ADD_FILTER_FIELD
 } from '../actions';
+
 
 const selectLists = (state: Array<Object> = [], action: Object) => {
     switch (action.type) {
@@ -44,17 +47,59 @@ const filterLists = (state: Array<Object> = [], action: Object) => {
         case ADD_FILTER:
             return [
                 ...state,
-                {values: action.values,selectedValue: action.selectedValue}
+                {
+                    values: action.values,
+                    selectedValue: action.selectedValue,
+                    selectedOpValue: action.selectedOpValue,
+                    columnFilterTypes: action.columnFilterTypes,
+                    filterType: action.filterType,
+                    filterList: action.filterList,
+                    selectedFilterList : action.selectedFilterList
+                }
             ]
         case SET_FILTERED:
             return state
                 .map( (el,ind) => {
-                    return ind != action.index ? el : {values : el.values, selectedValue : action.selectedValue.value};
+                    return ind != action.index ? el : {
+                        values: el.values,
+                        selectedValue: action.selectedValue.value,
+                        selectedOpValue: action.selectedOpValue,
+                        columnFilterTypes: el.columnFilterTypes,
+                        filterType: el.filterType,
+                        filterList: el.filterList,
+                        selectedFilterList : el.selectedFilterList
+                    };
                 });
         case REMOVE_FILTER:
             return state.filter(
                 (el,ind) =>{ 
                     return ind != action.index
+                });
+        case SET_OP_FILTERED:
+            return state
+                .map( (el,ind) => {
+                    return ind != action.index ? el : {
+                        values: el.values,
+                        selectedValue: el.selectedValue,
+                        selectedOpValue: action.selectedOpValue,
+                        columnFilterTypes: el.columnFilterTypes,
+                        filterType: el.filterType,
+                        filterList: el.filterList,
+                        selectedFilterList : el.selectedFilterList
+                    };
+                });
+        case ADD_FILTER_FIELD:
+            return state
+                .map((el, ind) => {
+                    return ind != action.index ? el : {
+                        values: el.values,
+                        selectedValue: el.selectedValue,
+                        selectedOpValue: el.selectedOpValue,
+                        columnFilterTypes: el.columnFilterTypes,
+                        filterType: action.filterType,
+                        filterList: action.filterList,
+                        selectedFilterList : el.selectedFilterList
+                    };
                 });
         default:
             return state;
