@@ -12,7 +12,8 @@ import {
     SET_OPERATED,
     REMOVE_OPERATION,
     SET_OP_FILTERED,
-    ADD_FILTER_FIELD
+    ADD_FILTER_FIELD,
+    SET_FILTER_VALUE
 } from '../actions';
 
 
@@ -54,6 +55,7 @@ const filterLists = (state: Array<Object> = [], action: Object) => {
                     columnFilterTypes: action.columnFilterTypes,
                     filterType: action.filterType,
                     filterList: action.filterList,
+                    filterValue : action.filterValue,
                     selectedFilterList : action.selectedFilterList
                 }
             ]
@@ -67,6 +69,21 @@ const filterLists = (state: Array<Object> = [], action: Object) => {
                         columnFilterTypes: el.columnFilterTypes,
                         filterType: el.filterType,
                         filterList: el.filterList,
+                        filterValue : el.filterValue,
+                        selectedFilterList : el.selectedFilterList
+                    };
+                });
+        case SET_FILTER_VALUE:
+            return state
+                .map( (el,ind) => {
+                    return ind != action.index ? el : {
+                        values: el.values,
+                        selectedValue: el.selectedValue,
+                        selectedOpValue: el.selectedOpValue,
+                        columnFilterTypes: el.columnFilterTypes,
+                        filterType: el.filterType,
+                        filterList: el.filterList,
+                        filterValue : action.filterValue,
                         selectedFilterList : el.selectedFilterList
                     };
                 });
@@ -85,6 +102,7 @@ const filterLists = (state: Array<Object> = [], action: Object) => {
                         columnFilterTypes: el.columnFilterTypes,
                         filterType: el.filterType,
                         filterList: el.filterList,
+                        filterValue : el.filterValue,
                         selectedFilterList : el.selectedFilterList
                     };
                 });
@@ -98,6 +116,7 @@ const filterLists = (state: Array<Object> = [], action: Object) => {
                         columnFilterTypes: el.columnFilterTypes,
                         filterType: action.filterType,
                         filterList: action.filterList,
+                        filterValue : el.filterValue,
                         selectedFilterList : el.selectedFilterList
                     };
                 });

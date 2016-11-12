@@ -2,12 +2,30 @@
 import React from 'react';
 import {Component} from 'react';
 import {connect} from 'react-redux';
-import { Input, Message, Icon, Form, Button, Grid, Popup, Header, Dropdown } from 'semantic-ui-react';
+import {
+    Input,
+    Message,
+    Icon,
+    Form,
+    Button,
+    Grid,
+    Popup,
+    Header,
+    Dropdown
+} from 'semantic-ui-react';
 import DatePicker from 'react-datepicker';
-import {addFilter,setFiltered,removeFilter,setOpFiltered,addFilterField} from '../actions';
+import {
+    addFilter,
+    setFiltered,
+    removeFilter,
+    setOpFiltered,
+    addFilterField,
+    setFilterValue
+} from '../actions';
 import moment from 'moment';
 
 class WhereBox extends Component {
+    val: '';
 	
     constructor(props) {
         super(props);
@@ -42,32 +60,45 @@ class WhereBox extends Component {
                                 let filterNode = null;
                                 switch(list.filterType){
                                     case 'INPUT':
-                                        filterNode = <Input placeholder='Ingrese valor/es (separados por ; )'/>;
+                                        list.filterValue = list.filterValue || '';
+                                        filterNode = <Input
+                                            placeholder='Ingrese valor/es (separados por ; )'
+                                            value={list.filterValue}
+                                            key = {'dd'+ind}
+                                            onChange={e => { this.props.setFilterValue(ind,e.target.value); } }
+                                            />;
                                         break;
                                     case 'DATE':
+                                        list.filterValue = list.filterValue || moment();
                                         filterNode = <DatePicker 
-                                            selected={moment()}
-                                            dateFormat="DD/MM/YYYY" 
+                                            selected={list.filterValue}
+                                            dateFormat="DD/MM/YYYY"
+                                            key = {'dd'+ind}
                                             locale="es"
                                             placeholderText="seleccione la fecha"
+                                            onChange={e => { this.props.setFilterValue(ind,e); } }
                                         />;
                                         break;
                                     case 'DROPDOWN':
                                         filterNode = <Dropdown
-                                            value = {list.selectedFilterList}
-                                            key = {'dd'+ind}
+                                            value={list.filterValue}
+                                            key={'dd' + ind}
                                             selection
                                             options={list.filterList}
-                                        />;
+                                            onChange={(name, value) => { this.props.setFilterValue(ind, value.value); } }
+                                            />;
+                                        break;
                                     case 'MULTIPLEDROPDOWN':
+                                        list.filterValue = list.filterValue || [];
                                         filterNode = <Dropdown
-                                            value = {list.selectedFilterList}
-                                            key = {'dd'+ind}
+                                            value={list.filterValue}
+                                            key={'dd' + ind}
                                             selection
                                             multiple
                                             options={list.filterList}
-                                        />;
-                                    
+                                            onChange={(name, value) => { this.props.setFilterValue(ind, value.value); } }
+                                            />;
+                                        break;
                                     default: null;
                                 }
                                 return( 
@@ -89,7 +120,7 @@ class WhereBox extends Component {
                                                 }
                                                 />
                                         </Grid.Column>
-                                        <Grid.Column key={'gc3' + ind}>
+                                        <Grid.Column key={'gc2' + ind}>
                                             <Dropdown
                                                 value={list.selectedOpValue}    
                                                 key={'dd'+ind} 
@@ -98,10 +129,10 @@ class WhereBox extends Component {
                                                 onChange={ (name,value) => { this.props.setOpFiltered(ind,value.value); } }
                                             />    
                                         </Grid.Column>
-                                        <Grid.Column key={'gc4'+ind}>
+                                        <Grid.Column key={'gc3'+ind}>
                                             {filterNode}
                                         </Grid.Column>
-                                        <Grid.Column key={'gc2'+ind} textAlign='right'>
+                                        <Grid.Column key={'gc4'+ind} textAlign='right'>
                                             <Button key={'btn' + ind} circular basic color='red' icon='remove' onClick={(e) => { e.preventDefault(); this.props.removeFilter(ind) } } />
                                         </Grid.Column>
                                     </Grid.Row>
@@ -124,4 +155,11 @@ const mapStateToProps : Object = (state : Object) => {
     return ({ filterLists: state.allReducers.filterLists });
 }
 
-export default connect(mapStateToProps,{addFilter,setFiltered,removeFilter,setOpFiltered,addFilterField})(WhereBox);
+export default connect(mapStateToProps, {
+    addFilter,
+    setFiltered,
+    removeFilter,
+    setOpFiltered,
+    addFilterField,
+    setFilterValue
+})(WhereBox);
