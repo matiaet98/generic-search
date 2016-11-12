@@ -32,7 +32,8 @@ class SelectBox extends Component {
                                         <Grid.Column key={'gc1'+ind} textAlign="left">
                                             <Dropdown 
                                                 value={list.selectedValue || list.values[0].value} 
-                                                key={'dd'+ind} 
+                                                key={'dd' + ind}
+                                                fluid
                                                 selection 
                                                 options={list.values}
                                                 onChange={ (name,value) => { this.props.setSelected(ind,value); } }

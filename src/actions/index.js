@@ -9,10 +9,12 @@ export const SET_FILTERED = 'SET_FILTERED';
 export const REMOVE_FILTER = 'REMOVE_FILTER';
 export const ADD_OPERATION = 'ADD_OPERATION';
 export const SET_OPERATED = 'SET_OPERATED';
+export const SET_OPERATION = 'SET_OPERATION';
 export const REMOVE_OPERATION = 'REMOVE_OPERATION';
 export const SET_OP_FILTERED = 'SET_OP_FILTERED';
 export const ADD_FILTER_FIELD = 'SET_FILTER_FIELD';
 export const SET_FILTER_VALUE = 'SET_FILTER_VALUE';
+export const ADD_FILTER_VALUE = 'ADD_FILTER_VALUE';
 const VIEW_NAME = 'mocked!';
 
 export const addOneSelect = (noValue : void) => (dispatch: Function) => {
@@ -85,6 +87,14 @@ export const setFilterValue = (index: number, value: string) => (dispatch: Funct
     });
 }
 
+export const addFilterValue = (index: number, value: string) => (dispatch: Function) => {
+    dispatch({
+        type: ADD_FILTER_VALUE,
+        index: index,
+        filterValue : value
+    });
+}
+
 export const addFilterField = (index: number, value: string, filterType: string) => (dispatch: Function) => {
     let filterList = [];
     if (filterType == 'DROPDOWN' || filterType == 'MULTIPLEDROPDOWN') {
@@ -127,6 +137,14 @@ export const setOperated = (index: number, value: string) => (dispatch: Function
         type: SET_OPERATED,
         index: index,
         selectedValue : value
+    });
+}
+
+export const setOperation = (index: number, value: string) => (dispatch: Function) => {
+    dispatch({
+        type: SET_OPERATION,
+        index: index,
+        selectedOperation : value
     });
 }
 

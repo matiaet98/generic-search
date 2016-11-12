@@ -13,7 +13,9 @@ import {
     REMOVE_OPERATION,
     SET_OP_FILTERED,
     ADD_FILTER_FIELD,
-    SET_FILTER_VALUE
+    SET_FILTER_VALUE,
+    ADD_FILTER_VALUE,
+    SET_OPERATION
 } from '../actions';
 
 
@@ -65,7 +67,7 @@ const filterLists = (state: Array<Object> = [], action: Object) => {
                     return ind != action.index ? el : {
                         values: el.values,
                         selectedValue: action.selectedValue.value,
-                        selectedOpValue: action.selectedOpValue,
+                        selectedOpValue: '',
                         columnFilterTypes: el.columnFilterTypes,
                         filterType: el.filterType,
                         filterList: el.filterList,
@@ -84,6 +86,20 @@ const filterLists = (state: Array<Object> = [], action: Object) => {
                         filterType: el.filterType,
                         filterList: el.filterList,
                         filterValue : action.filterValue,
+                        selectedFilterList : el.selectedFilterList
+                    };
+                });
+        case ADD_FILTER_VALUE:
+            return state
+                .map((el, ind) => {
+                    return ind != action.index ? el : {
+                        values: el.values,
+                        selectedValue: el.selectedValue,
+                        selectedOpValue: el.selectedOpValue,
+                        columnFilterTypes: el.columnFilterTypes,
+                        filterType: el.filterType,
+                        filterList: [...el.filterList, { text: action.filterValue,value : action.filterValue }],
+                        filterValue : el.filterValue,
                         selectedFilterList : el.selectedFilterList
                     };
                 });
@@ -116,7 +132,7 @@ const filterLists = (state: Array<Object> = [], action: Object) => {
                         columnFilterTypes: el.columnFilterTypes,
                         filterType: action.filterType,
                         filterList: action.filterList,
-                        filterValue : el.filterValue,
+                        filterValue : '',
                         selectedFilterList : el.selectedFilterList
                     };
                 });
@@ -129,12 +145,29 @@ const operationLists = (state: Array<Object> = [], action: Object) => {
     switch (action.type) {
         case ADD_OPERATION:
             return [
-                {values: action.values,selectedValue: action.selectedValue}
+                {
+                    values: action.values,
+                    selectedValue: action.selectedValue,
+                    selectedOperation : ''
+                }
             ]
         case SET_OPERATED:
             return state
                 .map( (el,ind) => {
-                    return ind != action.index ? el : {values : el.values, selectedValue : action.selectedValue.value};
+                    return ind != action.index ? el : {
+                        values: el.values,
+                        selectedValue: action.selectedValue.value,
+                        selectedOperation : el.selectedOperation
+                    };
+                });
+        case SET_OPERATION:
+            return state
+                .map( (el,ind) => {
+                    return ind != action.index ? el : {
+                        values: el.values,
+                        selectedValue: el.selectedValue,
+                        selectedOperation : action.selectedOperation.value
+                    };
                 });
         case REMOVE_OPERATION:
             return state.filter(

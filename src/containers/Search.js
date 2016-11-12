@@ -16,22 +16,27 @@ class Search extends Component {
 	
 	render() : Object {
         return (
-            <div>
-				<br/>
-            	<Grid centered columns={2}>
-    				<Grid.Column>
-						<SelectBox />
-					</Grid.Column>
+			<div style={{ marginLeft:"5%",marginRight:"5%",marginTop:"1%" }}>
+				<Grid centered>
+					<Grid.Row>	
+    					<Grid.Column>
+							<SelectBox />
+						</Grid.Column>
+					</Grid.Row>	
 				</Grid>
-				<Grid centered columns={2}>
-    				<Grid.Column>
-						<WhereBox />
-					</Grid.Column>
+				<Grid centered>
+					<Grid.Row>	
+    					<Grid.Column>
+							<WhereBox />
+						</Grid.Column>
+					</Grid.Row>
 				</Grid>
-				<Grid centered columns={2}>
-    				<Grid.Column>
-						<OperationBox />
-					</Grid.Column>
+				<Grid centered>
+					<Grid.Row>
+						<Grid.Column>
+							<OperationBox />
+						</Grid.Column>
+					</Grid.Row>
 				</Grid>
 				<Grid centered>
     				<Grid.Row verticalAlign='bottom'>

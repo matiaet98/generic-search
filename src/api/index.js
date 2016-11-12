@@ -21,7 +21,7 @@ export function getOperationFields(viewName : string): Array < Object > {
 export function getFilterFields(viewName : string): Array < Object > {
     return [
         { 'text': 'text1', 'value': 'value1', 'columnFilterType' : 'INPUT' }, 
-        { 'text': 'text2', 'value': 'value2', 'columnFilterType' : 'INPUT' },
+        { 'text': 'text2', 'value': 'value2', 'columnFilterType' : 'MULTIPLEINPUT' },
         { 'text': 'text3', 'value': 'value3', 'columnFilterType' : 'DATE' },
         { 'text': 'text4', 'value': 'value4', 'columnFilterType' : 'DROPDOWN' },
         { 'text': 'text5', 'value': 'value5', 'columnFilterType' : 'MULTIPLEDROPDOWN' }

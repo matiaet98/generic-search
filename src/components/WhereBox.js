@@ -20,7 +20,8 @@ import {
     removeFilter,
     setOpFiltered,
     addFilterField,
-    setFilterValue
+    setFilterValue,
+    addFilterValue
 } from '../actions';
 import moment from 'moment';
 
@@ -47,56 +48,138 @@ class WhereBox extends Component {
                         {
                             this.props.filterLists &&
                             this.props.filterLists.map((list, ind) => {
-                                const opList = [
-                                { text: '=', value: '=' },
-                                { text: '<>', value: '<>' },
-                                { text: '>', value: '>' },
-                                { text: '>=', value: '>=' },
-                                { text: '<', value: '<' },
-                                { text: '<=', value: '<=' },
-                                { text: 'entre', value: 'IN' },
-                                { text: 'fuera de', value: 'NOT IN' }
-                                ];
+                                let opList = [];
+                                let optionNode = null;
                                 let filterNode = null;
                                 switch(list.filterType){
                                     case 'INPUT':
+                                        opList = [
+                                            { text: '=', value: '=' },
+                                            { text: '<>', value: '<>' },
+                                            { text: '>', value: '>' },
+                                            { text: '>=', value: '>=' },
+                                            { text: '<', value: '<' },
+                                            { text: '<=', value: '<=' },
+                                        ];
                                         list.filterValue = list.filterValue || '';
                                         filterNode = <Input
-                                            placeholder='Ingrese valor/es (separados por ; )'
+                                            placeholder='Ingrese un valor'
                                             value={list.filterValue}
-                                            key = {'dd'+ind}
+                                            fluid
+                                            key={'dd' + ind}
                                             onChange={e => { this.props.setFilterValue(ind,e.target.value); } }
+                                            />;
+                                        optionNode = <Dropdown
+                                            value={list.selectedOpValue}
+                                            key={'dd' + ind}
+                                            selection
+                                            options={opList}
+                                            onChange={(name, value) => { this.props.setOpFiltered(ind, value.value); } }
+                                            />;
+                                        break;
+                                    case 'MULTIPLEINPUT':
+                                        opList = [
+                                            { text: 'entre', value: 'IN' },
+                                            { text: 'exceptuando', value: 'NOT IN' }
+                                        ];
+                                        list.filterValue = list.filterValue || [];
+                                        filterNode = <Dropdown
+                                            value={list.filterValue}
+                                            key={'dd' + ind}
+                                            selection
+                                            fluid
+                                            multiple
+                                            search
+                                            allowAdditions
+                                            options={list.filterList}
+                                            onAddItem={(name, value) => {
+                                                this.props.addFilterValue(ind, value.value);
+                                            } }
+                                            onChange={(name, value) => { this.props.setFilterValue(ind, value.value); } }
+                                            noResultsMessage="No ingreso valores"
+                                            placeholder="Valor + <Enter>"
+                                            />;
+                                        optionNode = <Dropdown
+                                            value={list.selectedOpValue}
+                                            key={'dd' + ind}
+                                            selection
+                                            options={opList}
+                                            onChange={(name, value) => { this.props.setOpFiltered(ind, value.value); } }
                                             />;
                                         break;
                                     case 'DATE':
+                                        opList = [
+                                            { text: '=', value: '=' },
+                                            { text: '<>', value: '<>' },
+                                            { text: '>', value: '>' },
+                                            { text: '>=', value: '>=' },
+                                            { text: '<', value: '<' },
+                                            { text: '<=', value: '<=' },
+                                        ];
                                         list.filterValue = list.filterValue || moment();
                                         filterNode = <DatePicker 
                                             selected={list.filterValue}
                                             dateFormat="DD/MM/YYYY"
                                             key = {'dd'+ind}
                                             locale="es"
+                                            fluid
                                             placeholderText="seleccione la fecha"
                                             onChange={e => { this.props.setFilterValue(ind,e); } }
-                                        />;
+                                            />;
+                                        optionNode = <Dropdown
+                                            value={list.selectedOpValue}
+                                            key={'dd' + ind}
+                                            selection
+                                            options={opList}
+                                            onChange={(name, value) => { this.props.setOpFiltered(ind, value.value); } }
+                                            />;
                                         break;
                                     case 'DROPDOWN':
+                                        opList = [
+                                            { text: '=', value: '=' },
+                                            { text: '<>', value: '<>' },
+                                            { text: '>', value: '>' },
+                                            { text: '>=', value: '>=' },
+                                            { text: '<', value: '<' },
+                                            { text: '<=', value: '<=' },
+                                        ];
                                         filterNode = <Dropdown
                                             value={list.filterValue}
                                             key={'dd' + ind}
                                             selection
+                                            fluid
                                             options={list.filterList}
                                             onChange={(name, value) => { this.props.setFilterValue(ind, value.value); } }
                                             />;
+                                        optionNode = <Dropdown
+                                            value={list.selectedOpValue}
+                                            key={'dd' + ind}
+                                            selection
+                                            options={opList}
+                                            onChange={(name, value) => { this.props.setOpFiltered(ind, value.value); } }
+                                            />;
                                         break;
                                     case 'MULTIPLEDROPDOWN':
+                                        opList = [
+                                            { text: 'entre', value: 'IN' },
+                                            { text: 'exceptuando', value: 'NOT IN' }
+                                        ];
                                         list.filterValue = list.filterValue || [];
                                         filterNode = <Dropdown
                                             value={list.filterValue}
                                             key={'dd' + ind}
                                             selection
                                             multiple
+                                            fluid
                                             options={list.filterList}
                                             onChange={(name, value) => { this.props.setFilterValue(ind, value.value); } }
+                                            />;
+                                        optionNode = <Dropdown
+                                            value={list.selectedOpValue}
+                                            key={'dd' + ind}
+                                            selection
+                                            options={opList}
+                                            onChange={(name, value) => { this.props.setOpFiltered(ind, value.value); } }
                                             />;
                                         break;
                                     default: null;
@@ -107,7 +190,8 @@ class WhereBox extends Component {
                                             <Dropdown 
                                                 value={list.selectedValue} 
                                                 key={'dd'+ind} 
-                                                selection 
+                                                selection
+                                                fluid
                                                 options={list.values}
                                                 onChange={(name, value) => {
                                                     this.props.setFiltered(ind, value);
@@ -120,16 +204,10 @@ class WhereBox extends Component {
                                                 }
                                                 />
                                         </Grid.Column>
-                                        <Grid.Column key={'gc2' + ind}>
-                                            <Dropdown
-                                                value={list.selectedOpValue}    
-                                                key={'dd'+ind} 
-                                                selection 
-                                                options={opList}
-                                                onChange={ (name,value) => { this.props.setOpFiltered(ind,value.value); } }
-                                            />    
+                                        <Grid.Column textAlign="center" key={'gc2' + ind}>
+                                            {optionNode}    
                                         </Grid.Column>
-                                        <Grid.Column key={'gc3'+ind}>
+                                        <Grid.Column key={'gc3' + ind}>
                                             {filterNode}
                                         </Grid.Column>
                                         <Grid.Column key={'gc4'+ind} textAlign='right'>
@@ -161,5 +239,6 @@ export default connect(mapStateToProps, {
     removeFilter,
     setOpFiltered,
     addFilterField,
-    setFilterValue
+    setFilterValue,
+    addFilterValue
 })(WhereBox);
