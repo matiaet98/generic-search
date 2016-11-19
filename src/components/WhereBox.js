@@ -26,7 +26,6 @@ import {
 import moment from 'moment';
 
 class WhereBox extends Component {
-    val: '';
 	
     constructor(props) {
         super(props);
@@ -67,6 +66,12 @@ class WhereBox extends Component {
                                             value={list.filterValue}
                                             fluid
                                             key={'dd' + ind}
+                                            onKeyPress={(e) => {
+                                                if (e.which == 13 || e.keyCode == 13) {
+                                                    e.preventDefault();
+                                                }
+                                                }
+                                            }
                                             onChange={e => { this.props.setFilterValue(ind,e.target.value); } }
                                             />;
                                         optionNode = <Dropdown
@@ -194,12 +199,13 @@ class WhereBox extends Component {
                                                 fluid
                                                 options={list.values}
                                                 onChange={(name, value) => {
-                                                    this.props.setFiltered(ind, value);
                                                     let index = list.values.findIndex((el, ind) => {
                                                         return el.value == value.value;
                                                     });
-                                                    let filterType = list.columnFilterTypes[index].columnFilterType;
-                                                    this.props.addFilterField(ind, value.value, filterType);
+                                                    let columnType = list.columnTypes[index].columnType;
+                                                    this.props.setFiltered(ind, value.value,columnType);
+                                                    let columnfilterType = list.columnFilterTypes[index].columnFilterType;
+                                                    this.props.addFilterField(ind, value.value, columnfilterType);
                                                 }
                                                 }
                                                 />

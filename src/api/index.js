@@ -2,11 +2,11 @@
 
 export function getSelectFields(viewName: string): Array<Object> {
     return [
-        { 'text': 'text1', 'value': 'value1', 'columnType':'TEXT' }, 
-        { 'text': 'text2', 'value': 'value2', 'columnType':'TEXT' },
-        { 'text': 'text3', 'value': 'value3', 'columnType':'TEXT' },
-        { 'text': 'text4', 'value': 'value4', 'columnType':'TEXT' },
-        { 'text': 'text5', 'value': 'value5', 'columnType':'TEXT' }
+        { 'text': 'text1', 'value': 'value1' }, 
+        { 'text': 'text2', 'value': 'value2' },
+        { 'text': 'text3', 'value': 'value3' },
+        { 'text': 'text4', 'value': 'value4' },
+        { 'text': 'text5', 'value': 'value5' }
     ];
 }
 export function getOperationFields(viewName : string): Array < Object > {
@@ -17,14 +17,21 @@ export function getOperationFields(viewName : string): Array < Object > {
         { 'text': 'text5', 'value': 'value5' }
     ];
 }
+export function getOperations(noValue: void): Array<Object>{
+    return [
+        { text: "Contar", value: "COUNT" }                                    
+    ];
+}
+
+ 
 
 export function getFilterFields(viewName : string): Array < Object > {
     return [
-        { 'text': 'text1', 'value': 'value1', 'columnFilterType' : 'INPUT' }, 
-        { 'text': 'text2', 'value': 'value2', 'columnFilterType' : 'MULTIPLEINPUT' },
-        { 'text': 'text3', 'value': 'value3', 'columnFilterType' : 'DATE' },
-        { 'text': 'text4', 'value': 'value4', 'columnFilterType' : 'DROPDOWN' },
-        { 'text': 'text5', 'value': 'value5', 'columnFilterType' : 'MULTIPLEDROPDOWN' }
+        { 'text': 'text1', 'value': 'value1', 'columnType':'TEXT', 'columnFilterType' : 'INPUT' }, 
+        { 'text': 'text2', 'value': 'value2', 'columnType':'TEXT', 'columnFilterType' : 'MULTIPLEINPUT' },
+        { 'text': 'text3', 'value': 'value3', 'columnType':'DATE', 'columnFilterType' : 'DATE' },
+        { 'text': 'text4', 'value': 'value4', 'columnType':'NUMBER', 'columnFilterType' : 'DROPDOWN' },
+        { 'text': 'text5', 'value': 'value5', 'columnType':'TEXT', 'columnFilterType' : 'MULTIPLEDROPDOWN' }
     ];
 }
 

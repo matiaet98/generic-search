@@ -1,21 +1,10 @@
 // @flow
 import { combineReducers } from 'redux';
 import {
-    ADD_ONE_SELECT,
-    ADD_ALL_SELECT,
-    SET_SELECTED,
-    REMOVE_SELECT,
-    ADD_FILTER,
-    SET_FILTERED,
-    REMOVE_FILTER,
-    ADD_OPERATION,
-    SET_OPERATED,
-    REMOVE_OPERATION,
-    SET_OP_FILTERED,
-    ADD_FILTER_FIELD,
-    SET_FILTER_VALUE,
-    ADD_FILTER_VALUE,
-    SET_OPERATION
+    ADD_ONE_SELECT,ADD_ALL_SELECT,SET_SELECTED,REMOVE_SELECT,
+    ADD_FILTER, SET_FILTERED, REMOVE_FILTER,SET_OP_FILTERED,ADD_FILTER_FIELD,SET_FILTER_VALUE,ADD_FILTER_VALUE,
+    ADD_OPERATION,SET_OPERATED,REMOVE_OPERATION,SET_OPERATION,
+    CLOSE_MODAL,SHOW_MODAL
 } from '../actions';
 
 
@@ -55,6 +44,8 @@ const filterLists = (state: Array<Object> = [], action: Object) => {
                     selectedValue: action.selectedValue,
                     selectedOpValue: action.selectedOpValue,
                     columnFilterTypes: action.columnFilterTypes,
+                    columnTypes: action.columnTypes,
+                    selectedColumnType: action.selectedColumnType,
                     filterType: action.filterType,
                     filterList: action.filterList,
                     filterValue : action.filterValue,
@@ -66,9 +57,11 @@ const filterLists = (state: Array<Object> = [], action: Object) => {
                 .map( (el,ind) => {
                     return ind != action.index ? el : {
                         values: el.values,
-                        selectedValue: action.selectedValue.value,
+                        selectedValue: action.selectedValue,
                         selectedOpValue: '',
                         columnFilterTypes: el.columnFilterTypes,
+                        columnTypes: el.columnTypes,
+                        selectedColumnType: action.selectedColumnType,
                         filterType: el.filterType,
                         filterList: el.filterList,
                         filterValue : el.filterValue,
@@ -83,6 +76,8 @@ const filterLists = (state: Array<Object> = [], action: Object) => {
                         selectedValue: el.selectedValue,
                         selectedOpValue: el.selectedOpValue,
                         columnFilterTypes: el.columnFilterTypes,
+                        columnTypes: el.columnTypes,
+                        selectedColumnType: el.selectedColumnType,
                         filterType: el.filterType,
                         filterList: el.filterList,
                         filterValue : action.filterValue,
@@ -97,6 +92,8 @@ const filterLists = (state: Array<Object> = [], action: Object) => {
                         selectedValue: el.selectedValue,
                         selectedOpValue: el.selectedOpValue,
                         columnFilterTypes: el.columnFilterTypes,
+                        columnTypes: el.columnTypes,
+                        selectedColumnType: el.selectedColumnType,
                         filterType: el.filterType,
                         filterList: [...el.filterList, { text: action.filterValue,value : action.filterValue }],
                         filterValue : el.filterValue,
@@ -116,6 +113,8 @@ const filterLists = (state: Array<Object> = [], action: Object) => {
                         selectedValue: el.selectedValue,
                         selectedOpValue: action.selectedOpValue,
                         columnFilterTypes: el.columnFilterTypes,
+                        columnTypes: el.columnTypes,
+                        selectedColumnType: el.selectedColumnType,
                         filterType: el.filterType,
                         filterList: el.filterList,
                         filterValue : el.filterValue,
@@ -130,6 +129,8 @@ const filterLists = (state: Array<Object> = [], action: Object) => {
                         selectedValue: el.selectedValue,
                         selectedOpValue: el.selectedOpValue,
                         columnFilterTypes: el.columnFilterTypes,
+                        columnTypes: el.columnTypes,
+                        selectedColumnType: el.selectedColumnType,
                         filterType: action.filterType,
                         filterList: action.filterList,
                         filterValue : '',
@@ -148,7 +149,8 @@ const operationLists = (state: Array<Object> = [], action: Object) => {
                 {
                     values: action.values,
                     selectedValue: action.selectedValue,
-                    selectedOperation : ''
+                    operations : action.operations,
+                    selectedOperation : action.selectedOperation
                 }
             ]
         case SET_OPERATED:
@@ -157,6 +159,7 @@ const operationLists = (state: Array<Object> = [], action: Object) => {
                     return ind != action.index ? el : {
                         values: el.values,
                         selectedValue: action.selectedValue.value,
+                        operations : el.operations,
                         selectedOperation : el.selectedOperation
                     };
                 });
@@ -166,6 +169,7 @@ const operationLists = (state: Array<Object> = [], action: Object) => {
                     return ind != action.index ? el : {
                         values: el.values,
                         selectedValue: el.selectedValue,
+                        operations : el.operations,
                         selectedOperation : action.selectedOperation.value
                     };
                 });
@@ -179,10 +183,22 @@ const operationLists = (state: Array<Object> = [], action: Object) => {
     }
 }
 
+const modal = (state: Object = {}, action: Object) => {
+    switch (action.type) {
+        case CLOSE_MODAL:
+            return {...state, isOpen: false, message : '',title:'' };
+        case SHOW_MODAL:
+            return {...state,  isOpen: true,message : action.message,title:action.title };
+        default:
+            return state;
+    }
+}
+
 const allReducers = combineReducers({
     selectLists,
     filterLists,
-    operationLists
+    operationLists,
+    modal
 });
 
 export default allReducers;

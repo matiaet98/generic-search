@@ -1,5 +1,5 @@
 // @flow
-import { getSelectFields, getOperationFields, getFilterFields, getDropdownValues } from '../api';
+import { getSelectFields, getOperationFields, getFilterFields, getDropdownValues,getOperations } from '../api';
 export const ADD_ONE_SELECT = 'ADD_ONE_SELECT';
 export const ADD_ALL_SELECT = 'ADD_ALL_SELECT';
 export const SET_SELECTED = 'SET_SELECTED';
@@ -15,13 +15,16 @@ export const SET_OP_FILTERED = 'SET_OP_FILTERED';
 export const ADD_FILTER_FIELD = 'SET_FILTER_FIELD';
 export const SET_FILTER_VALUE = 'SET_FILTER_VALUE';
 export const ADD_FILTER_VALUE = 'ADD_FILTER_VALUE';
+export const CLOSE_MODAL = 'CLOSE_MODAL';
+export const SHOW_MODAL = 'SHOW_MODAL';
+export const COUNT_RECORDS = 'COUNT_RECORDS';
 const VIEW_NAME = 'mocked!';
 
 export const addOneSelect = (noValue : void) => (dispatch: Function) => {
     let values = getSelectFields(VIEW_NAME); //En la realidad habria que manejarlo con async await
     dispatch({
         type: ADD_ONE_SELECT,
-        values : values,
+        values: values,
         selectedValue : values[0].value
     });
 }
@@ -53,15 +56,20 @@ export const removeSelect = (index: number) => (dispatch: Function) => {
 export const addFilter = (noValue: void) => (dispatch: Function) => {
     let values = getFilterFields(VIEW_NAME); //En la realidad habria que manejarlo con async await
     let valueList = values.map((el, ind) => {
-        return { value : el.value, text: el.text };        
-    })
-    let typeList = values.map((el, ind) => {
-        return {columnFilterType : el.columnFilterType}
+        return { value: el.value, text: el.text };
+    });
+    let columnFilterTypes = values.map((el, ind) => {
+        return { columnFilterType: el.columnFilterType }
+    });
+    let columnTypes = values.map((el, ind) => {
+        return {columnType : el.columnType}
     })
     dispatch({
         type: ADD_FILTER,
         values: valueList,
-        columnFilterTypes : typeList, 
+        columnFilterTypes: columnFilterTypes,
+        columnTypes: columnTypes,
+        selectedColumnType: '',
         selectedValue: '',
         selectedOpValue: '',
         filterType: '',
@@ -71,11 +79,12 @@ export const addFilter = (noValue: void) => (dispatch: Function) => {
     });
 }
 
-export const setFiltered = (index: number, value: string) => (dispatch: Function) => {
+export const setFiltered = (index: number, value: string, columnType: string) => (dispatch: Function) => {
     dispatch({
         type: SET_FILTERED,
         index: index,
-        selectedValue : value
+        selectedValue: value,
+        selectedColumnType: columnType
     });
 }
 
@@ -125,10 +134,14 @@ export const removeFilter = (index: number) => (dispatch: Function) => {
 
 export const addOperation = (noValue: void) => (dispatch: Function) => {
     let values = getOperationFields(VIEW_NAME); //En la realidad habria que manejarlo con async await
+    let operations = getOperations();
+
     dispatch({
         type: ADD_OPERATION,
         values : values,
-        selectedValue : values[0].value
+        selectedValue: values[0].value,
+        operations : operations,
+        selectedOperation: operations[0].value
     })
 }
 
@@ -155,3 +168,116 @@ export const removeOperation = (index: number) => (dispatch: Function) => {
     });
 }
 
+export const closeModal = () => (dispatch: Function) => {
+    dispatch({
+        type: CLOSE_MODAL
+    });
+}
+
+export const showModal = (title:string,message : string) => (dispatch: Function) => {
+    dispatch({
+        type: SHOW_MODAL,
+        message: message,
+        title:title
+    });
+}
+
+
+const createBaseStatement = (selectLists: Array<Object>, filterLists: Array<Object>, operationLists: Array<Object>) : string => {
+    let select = 'SELECT ';
+    let from = 'FROM '+VIEW_NAME+' ';
+    let where = 'WHERE 1=1 ';
+    let groupBy = 'GROUP BY ';
+    
+    let fields = '';
+    selectLists.map(
+        (el, ind) => {
+            fields += el.selectedValue + ',';
+        }
+    );
+
+    if (fields.substring(fields.length - 1, fields.length) == ',') {
+        fields = fields.substring(0, fields.length - 1) + ' ';
+    }
+    select += fields;
+    groupBy += fields;
+
+    if (operationLists.length > 0) {
+        select += ',';
+        operationLists.map(
+            (el, ind) => {
+                select += el.selectedOperation+'('+el.selectedValue + '),';
+            }
+        );
+    }
+    else {
+        groupBy = '';
+    }
+    
+    if (select.substring(select.length - 1, select.length) == ',') {
+        select = select.substring(0, select.length - 1)+' ';
+    }
+
+    filterLists.map(
+        (el) => {
+            let val = '';
+            switch (el.filterType) {
+                case 'INPUT': 
+                case 'DROPDOWN':
+                    if (el.selectedColumnType == 'TEXT' || el.selectedColumnType == 'LINK') {
+                        val += `'` + el.filterValue || '' + `'`;
+                    }
+                    else { //Para number
+                        val += el.filterValue || 0;
+                    }
+                    break;
+                case 'DATE':
+                    val += `TO_DATE('` + el.filterValue || '01/01/0001' + `','DD/MM/RRRR')`; //Con moment es el.filterValue.format('DD/MM/YYYY')
+                    break;
+                case 'MULTIPLEINPUT':
+                case 'MULTIPLEDROPDOWN':
+                    val += '(';    
+                    if (el.selectedColumnType == 'TEXT' || el.selectedColumnType == 'LINK') {
+                        el.filterValue.map((el2) => {
+                            val += `'` + el2 + `',`;
+                        });
+                    }
+                    else {
+                      el.filterValue.map((el2) => {
+                          val += el2 + ',';
+                      });
+                    }
+                    if (el.filterValue.length == 0) {
+                        val += '0';
+                    }
+
+                    if (val.substring(val.length - 1, val.length) == ',') {
+                      val = val.substring(0, val.length - 1);
+                    }
+                    val += ')';
+                break;
+              default:
+                  null;
+            }
+            if (el.selectedValue != '' && el.selectedOpValue != '') {
+                where += 'AND ' + el.selectedValue + ' ' + el.selectedOpValue + ' ' + val + ' ';
+            }  
+      }
+    );  
+    
+    return select + from + where + groupBy;
+}
+
+
+
+
+export const countRecords = (selectLists: Array<Object>, filterLists: Array<Object>, operationLists: Array<Object>) => (dispatch: Function) => {
+    const baseStatement = createBaseStatement(selectLists, filterLists, operationLists);
+    console.log(baseStatement);
+    //const countStatement = createCountStatement(baseStatement);
+}
+
+/*export const prepareStatements = (selectLists: Array<Object>, filterList: Array<Object>, operationList: Array<Object>) => (dispatch : Function){
+    if (operationList.length == 0) { //Cuando no hay que operar
+    }
+}*/

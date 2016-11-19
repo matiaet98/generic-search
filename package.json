@@ -49,6 +49,6 @@
     "react-router-redux": "^4.0.6",
     "redux": "^3.6.0",
     "redux-thunk": "^2.1.0",
-    "semantic-ui-react": "^0.56.13"
+    "semantic-ui-react": "^0.60.4"
   }
 }

@@ -37,9 +37,6 @@ class OperationBox extends Component {
                         {
                             this.props.operationLists &&
                             this.props.operationLists.map((list, ind) => {
-                                let operations = [
-                                    {text: "Contar",value:"COUNT"}                                    
-                                ];
                                 return( 
                                     <Grid.Row key={'gr'+ind} verticalAlign="top" columns={3}>
                                         <Grid.Column key={'gc1'+ind} textAlign="left">
@@ -54,11 +51,11 @@ class OperationBox extends Component {
                                         </Grid.Column>
                                         <Grid.Column key={'gc2'+ind}>
                                             <Dropdown 
-                                                value={list.selectedOperation || operations[0].value} 
+                                                value={list.selectedOperation || list.operations[0].value} 
                                                 key={'dd'+ind} 
                                                 selection
                                                 fluid
-                                                options={operations}
+                                                options={list.operations}
                                                 onChange={ (name,value) => { this.props.setOperation(ind,value); } }
                                                 />
                                         </Grid.Column>

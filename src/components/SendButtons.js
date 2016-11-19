@@ -2,27 +2,75 @@
 import React from 'react';
 import {Component} from 'react';
 import {connect} from 'react-redux';
-import {Button} from 'semantic-ui-react';
-import {} from '../actions';
+import {Button,Modal} from 'semantic-ui-react';
+import {showModal,closeModal,countRecords} from '../actions';
 
 class SendButton extends Component {
-	
+    
     constructor(props) {
         super(props);
     }
-    
+
     render(): Object {
-    	return (
+        return (
             <div>
-                <Button key='btnSend' icon='search' color='blue' content='Realizar Consulta' onClick={(e) => { e.preventDefault(); } } />
-                <Button key='btnExport' icon='file excel outline' color='green' content='Exportar a CSV' onClick={(e) => { e.preventDefault(); } } />
+                <Button
+                    key='btnSend'
+                    icon='search'
+                    color='blue'
+                    content='Buscar'
+                    onClick={(e) => {
+                        e.preventDefault();
+                        if (this.props.selectLists.length == 0) {
+                            this.props.showModal('Error','Debe seleccionar al menos un campo para consultar');
+                        }
+                        this.props.countRecords(
+                            this.props.selectLists,
+                            this.props.filterLists,
+                            this.props.operationLists
+                        );
+                    } }
+                    />
+                <Button
+                    key='btnExport'
+                    icon='file excel outline'
+                    color='green'
+                    content='Exportar a CSV'
+                    onClick={(e) => {
+                        e.preventDefault();
+                        if (this.props.selectLists.length == 0) {
+                            this.props.showModal('Error','Debe seleccionar al menos un campo para consultar');
+                        }
+                    } }
+                    />
+                <Modal
+                    open={this.props.modal.isOpen}
+                    dimmer='blurring'
+                    closeOnEscape={false}
+                    closeOnRootNodeClick={false}
+                >
+                    <Modal.Header>
+                        <p>{this.props.modal.title}</p>
+                    </Modal.Header>
+                    <Modal.Content>
+                        <p>{this.props.modal.message}</p>
+                    </Modal.Content>
+                    <Modal.Actions>
+                        <Button color='blue' onClick={(e) => { e.preventDefault(); this.props.closeModal() } }>Ok</Button>
+                    </Modal.Actions>
+                </Modal>
 			</div>
 		);
 	}
 }
 
-const mapStateToProps : Object = (state : Object) => {
-    return state;
+const mapStateToProps: Object = (state: Object) => {
+    return ({
+        selectLists: state.allReducers.selectLists,
+        filterLists : state.allReducers.filterLists,
+        operationLists : state.allReducers.operationLists,
+        modal: state.allReducers.modal
+    });
 }
 
-export default connect(mapStateToProps,{})(SendButton);
+export default connect(mapStateToProps,{showModal,closeModal,countRecords})(SendButton);
