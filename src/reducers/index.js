@@ -4,7 +4,7 @@ import {
     ADD_ONE_SELECT,ADD_ALL_SELECT,SET_SELECTED,REMOVE_SELECT,
     ADD_FILTER, SET_FILTERED, REMOVE_FILTER,SET_OP_FILTERED,ADD_FILTER_FIELD,SET_FILTER_VALUE,ADD_FILTER_VALUE,
     ADD_OPERATION,SET_OPERATED,REMOVE_OPERATION,SET_OPERATION,
-    CLOSE_MODAL,SHOW_MODAL
+    CLOSE_MODAL,SHOW_MODAL,COUNT_RECORDS,QUERY,CHANGE_SOURCE
 } from '../actions';
 
 
@@ -13,16 +13,31 @@ const selectLists = (state: Array<Object> = [], action: Object) => {
         case ADD_ONE_SELECT:
             return [
                 ...state,
-                {values: action.values,selectedValue: action.selectedValue}
+                {
+                    values: action.values,
+                    selectedValue: action.selectedValue,
+                    selectedText: action.selectedText,
+                    selectedType: action.selectedType
+                }
             ]            
         case ADD_ALL_SELECT:
             return action.values.map((val,ind)=>{
-                return {values : action.values,selectedValue : val.value}
+                return {
+                    values: action.values,
+                    selectedValue: val.value,
+                    selectedText: val.text,
+                    selectedType: val.columnType
+                }
             });
         case SET_SELECTED:
             return state
-                .map( (el,ind) => {
-                    return ind != action.index ? el : {values : el.values, selectedValue : action.selectedValue.value};
+                .map((el, ind) => {
+                    return ind != action.index ? el : {
+                        values: el.values,
+                        selectedValue: action.selectedValue,
+                        selectedText: action.selectedText,
+                        selectedType: action.selectedType
+                    };
                 });
         case REMOVE_SELECT:
             return state.filter(
@@ -194,11 +209,36 @@ const modal = (state: Object = {}, action: Object) => {
     }
 }
 
+const statement = (state: Object = {}, action: Object) => {
+    switch (action.type) {
+        case COUNT_RECORDS:
+            return {...state,
+                baseStatement: action.baseStatement,
+                countStatement: action.countStatement,
+                recordCount: action.recordCount,
+                view : action.view,
+                results : []
+            }
+        case QUERY:
+            return {...state,
+                results: action.results,
+                view : action.view
+            }
+        case CHANGE_SOURCE:
+            return {...state,
+                view : action.view
+            }
+        default:
+            return state;
+    }
+}
+
 const allReducers = combineReducers({
     selectLists,
     filterLists,
     operationLists,
-    modal
+    modal,
+    statement
 });
 
 export default allReducers;

@@ -1,9 +1,15 @@
 // @flow
 import React from 'react';
 import {Component} from 'react';
-import {connect} from 'react-redux';
+import { connect } from 'react-redux';
+import { browserHistory } from 'react-router';
 import {Button,Modal} from 'semantic-ui-react';
-import {showModal,closeModal,countRecords} from '../actions';
+import {
+    showModal,
+    closeModal,
+    countRecords,
+    query
+} from '../actions';
 
 class SendButton extends Component {
     
@@ -11,6 +17,13 @@ class SendButton extends Component {
         super(props);
     }
 
+    componentDidUpdate() {
+        if (this.props.statement.results && this.props.statement.results.length == 0) {
+            this.props.query(this.props.statement.baseStatement,this.props.statement.view);
+            browserHistory.push('/results');
+        }
+    }
+    
     render(): Object {
         return (
             <div>
@@ -69,8 +82,14 @@ const mapStateToProps: Object = (state: Object) => {
         selectLists: state.allReducers.selectLists,
         filterLists : state.allReducers.filterLists,
         operationLists : state.allReducers.operationLists,
-        modal: state.allReducers.modal
+        modal: state.allReducers.modal,
+        statement : state.allReducers.statement
     });
 }
 
-export default connect(mapStateToProps,{showModal,closeModal,countRecords})(SendButton);
+export default connect(mapStateToProps, {
+    showModal,
+    closeModal,
+    countRecords,
+    query
+})(SendButton);

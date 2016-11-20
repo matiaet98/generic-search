@@ -2,7 +2,7 @@ const webpack = require('webpack');
 const PROD = JSON.parse(process.env.PROD_ENV || '0');
 
 module.exports = {
-     entry: './src/index.js',
+     entry: ['babel-polyfill','./src/index.js'],
      output: {
          path: 'dist/',
          publicPath: "dist/",

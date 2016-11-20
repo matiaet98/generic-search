@@ -1,5 +1,15 @@
 // @flow
-import { getSelectFields, getOperationFields, getFilterFields, getDropdownValues,getOperations } from '../api';
+import {
+    getSelectFields,
+    getOperationFields,
+    getFilterFields,
+    getDropdownValues,
+    getOperations,
+    fetchRecordCount,
+    fetchRecords,
+    fetchMView,
+    fetchView
+} from '../api';
 export const ADD_ONE_SELECT = 'ADD_ONE_SELECT';
 export const ADD_ALL_SELECT = 'ADD_ALL_SELECT';
 export const SET_SELECTED = 'SET_SELECTED';
@@ -18,14 +28,17 @@ export const ADD_FILTER_VALUE = 'ADD_FILTER_VALUE';
 export const CLOSE_MODAL = 'CLOSE_MODAL';
 export const SHOW_MODAL = 'SHOW_MODAL';
 export const COUNT_RECORDS = 'COUNT_RECORDS';
-const VIEW_NAME = 'mocked!';
+export const QUERY = 'QUERY';
+export const CHANGE_SOURCE = 'CHANGE_SOURCE';
+var VIEW_NAME = 'VW_CIRCUITO';
 
 export const addOneSelect = (noValue : void) => (dispatch: Function) => {
     let values = getSelectFields(VIEW_NAME); //En la realidad habria que manejarlo con async await
     dispatch({
         type: ADD_ONE_SELECT,
         values: values,
-        selectedValue : values[0].value
+        selectedValue: values[0].value,
+        selectedText: values[0].text
     });
 }
 
@@ -34,15 +47,20 @@ export const addAllSelect = (noValue : void) => (dispatch: Function) => {
     dispatch({
         type: ADD_ALL_SELECT,
         values : values,
-        selectedValue : values[0].value
+        selectedValue: values[0].value,
+        selectedText: values[0].text,
+        selectedType: values[0].columnType
+        
     });
 }
 
-export const setSelected = (index: number, value: string) => (dispatch: Function) => {
+export const setSelected = (index: number, value: string, text : string,columnType:string) => (dispatch: Function) => {
     dispatch({
         type: SET_SELECTED,
         index: index,
-        selectedValue : value
+        selectedValue: value,
+        selectedText: text,
+        selectedType:columnType
     });
 }
 
@@ -225,14 +243,20 @@ const createBaseStatement = (selectLists: Array<Object>, filterLists: Array<Obje
                 case 'INPUT': 
                 case 'DROPDOWN':
                     if (el.selectedColumnType == 'TEXT' || el.selectedColumnType == 'LINK') {
-                        val += `'` + el.filterValue || '' + `'`;
+                        if (!el.filterValue || el.filterValue == '') {
+                            el.filterValue = 'error';
+                        }
+                        val += `'` + el.filterValue + `'`;
                     }
                     else { //Para number
-                        val += el.filterValue || 0;
+                        if (!el.filterValue || el.filterValue == '') {
+                            el.filterValue = 0;
+                        }
+                        val += el.filterValue;
                     }
                     break;
                 case 'DATE':
-                    val += `TO_DATE('` + el.filterValue || '01/01/0001' + `','DD/MM/RRRR')`; //Con moment es el.filterValue.format('DD/MM/YYYY')
+                        val += `TO_DATE('` + el.filterValue.format('DD/MM/YYYY') + `','DD/MM/RRRR')`;
                     break;
                 case 'MULTIPLEINPUT':
                 case 'MULTIPLEDROPDOWN':
@@ -267,17 +291,46 @@ const createBaseStatement = (selectLists: Array<Object>, filterLists: Array<Obje
     
     return select + from + where + groupBy;
 }
-
-
-
-
-export const countRecords = (selectLists: Array<Object>, filterLists: Array<Object>, operationLists: Array<Object>) => (dispatch: Function) => {
-    const baseStatement = createBaseStatement(selectLists, filterLists, operationLists);
-    console.log(baseStatement);
-    //const countStatement = createCountStatement(baseStatement);
+const createCountStatement = (baseStatement: string) : string => {
+    return(`SELECT COUNT(*) FROM (${baseStatement})`);
 }
 
-/*export const prepareStatements = (selectLists: Array<Object>, filterList: Array<Object>, operationList: Array<Object>) => (dispatch : Function){
-    if (operationList.length == 0) { //Cuando no hay que operar
+export const countRecords = (selectLists: Array<Object>, filterLists: Array<Object>, operationLists: Array<Object>) => async (dispatch: Function) => {
+    const baseStatement = createBaseStatement(selectLists, filterLists, operationLists);
+    const countStatement = createCountStatement(baseStatement);
+    const view = await fetchMView();
+    const recordCount = await fetchRecordCount(countStatement,view);
+    dispatch({
+        type: COUNT_RECORDS,
+        baseStatement: baseStatement,
+        countStatement: countStatement,
+        recordCount: recordCount,
+        view : view
+    });
+}
+
+export const query = (baseStatement: string,view:string) => async (dispatch: Function) => {
+    let results: Array<any> = await fetchRecords(baseStatement, view);
+    let results2 = results.map((el, ind) => {
+        return { '_id': ind,...el};
+    });
+    dispatch({
+        type: QUERY,
+        results: results2,
+        view : view
+    });
+}
+
+export const changeSource = (viewName: string) => async(dispatch: Function) => {
+    let view;
+    if (viewName == 'VIEW') {
+        view = await fetchView();        
     }
-}*/
+    else {
+        view = await fetchMView();
+    }
+    dispatch({
+        type: CHANGE_SOURCE,
+        view : view
+    });
+}

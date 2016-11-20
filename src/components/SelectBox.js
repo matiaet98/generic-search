@@ -27,6 +27,9 @@ class SelectBox extends Component {
                         {
                             this.props.selectLists &&
                             this.props.selectLists.map((list, ind) => {
+                                let options = list.values.map((el) => {
+                                    return { value: el.value, text: el.text };                                    
+                                });
                                 return( 
                                     <Grid.Row key={'gr'+ind} verticalAlign="top" columns={2}>
                                         <Grid.Column key={'gc1'+ind} textAlign="left">
@@ -35,8 +38,13 @@ class SelectBox extends Component {
                                                 key={'dd' + ind}
                                                 fluid
                                                 selection 
-                                                options={list.values}
-                                                onChange={ (name,value) => { this.props.setSelected(ind,value); } }
+                                                options={options}
+                                                onChange={(name, value) => {
+                                                    let obj = list.values.find((el) => {
+                                                        return el.value == value.value;
+                                                    });
+                                                    this.props.setSelected(ind, obj.value, obj.text,obj.columnType);
+                                                } }
                                                 />
                                         </Grid.Column>
                                         <Grid.Column key={'gc2'+ind} textAlign='right'>
