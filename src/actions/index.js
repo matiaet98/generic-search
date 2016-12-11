@@ -150,8 +150,8 @@ export const removeFilter = (index: number) => (dispatch: Function) => {
     });
 }
 
-export const addOperation = (noValue: void) => (dispatch: Function) => {
-    let values = getOperationFields(VIEW_NAME); //En la realidad habria que manejarlo con async await
+export const addOperation = (noValue: void) => async(dispatch: Function) => {
+    let values = await getOperationFields(VIEW_NAME);
     let operations = getOperations();
 
     dispatch({

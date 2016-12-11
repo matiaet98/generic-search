@@ -1,22 +1,49 @@
 //@flow
 
-export function getSelectFields(viewName: string): Array<Object> {
-    return [
-        { 'text': 'text1', 'value': 'value1','columnType':'LINK' }, 
-        { 'text': 'text2', 'value': 'value2','columnType':'TEXT' },
-        { 'text': 'text3', 'value': 'value3','columnType':'DATE' },
-        { 'text': 'text4', 'value': 'value4','columnType':'NUMBER' },
-        { 'text': 'text5', 'value': 'value5','columnType':'TEXT' }
-    ];
+const VIEW = 'VW_BI39_DATOS';
+const MVIEW = 'VW_BI39_DATOS';
+const URL = 'https://sefica.afip.gob.ar/pls/wfp/';
+
+export function fetchView(noValue: void): Promise<string>{
+    return new Promise((resolve, reject) => {
+        resolve(VIEW);        
+    });
 }
-export function getOperationFields(viewName : string): Array < Object > {
-    return [
-        { 'text': 'text1', 'value': 'value1' }, 
-        { 'text': 'text2', 'value': 'value2' },
-        { 'text': 'text3', 'value': 'value3' },
-        { 'text': 'text5', 'value': 'value5' }
-    ];
+
+export function fetchMView(noValue: void): Promise<string>{
+    return new Promise((resolve, reject) => {
+        resolve(MVIEW);        
+    });
 }
+
+export function getSelectFields(viewName: string): Promise<Array<Object>> {
+    return new Promise((resolve, reject) => {
+        fetch(URL + 'GENERIC_SEARCH.GET_SELECT_COLUMNS', {
+            mode: 'cors',
+            cache: 'default',
+            redirect: 'follow',
+            method: 'POST',
+            data: JSON.stringify({
+                'P_VIEW_NAME': viewName
+            })
+        }).then((response : Object) => {
+            resolve(JSON.parse(response));
+        }).catch((error) => {
+            reject('###Error fetching fields');
+        });    
+    });
+}
+export function getOperationFields(viewName: string): Promise<Array<Object>> {
+    return new Promise((resolve, reject) => {
+        resolve([
+            { 'text': 'text1', 'value': 'value1' },
+            { 'text': 'text2', 'value': 'value2' },
+            { 'text': 'text3', 'value': 'value3' },
+            { 'text': 'text5', 'value': 'value5' }
+        ]);
+    });
+}
+
 export function getOperations(noValue: void): Array<Object>{
     return [
         { text: "Contar", value: "COUNT" }                                    
@@ -76,17 +103,5 @@ export function fetchRecords(baseStatement: string,view : string): Promise<Array
         }
         resolve(result);
         
-    });
-}
-
-export function fetchView(noValue: void): Promise<string>{
-    return new Promise((resolve, reject) => {
-        resolve('VW_CIRCUITO');        
-    });
-}
-
-export function fetchMView(noValue: void): Promise<string>{
-    return new Promise((resolve, reject) => {
-        resolve('MV_CIRCUITO');        
     });
 }
